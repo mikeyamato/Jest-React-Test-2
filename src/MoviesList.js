@@ -3,17 +3,24 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import Movie from './Movie';
 
+// console.log('**** this',process.env.TMDB_API_KEY)
+
 class MoviesList extends PureComponent {
   state = {
     movies: [],
   };
 
   async componentDidMount() {
+    
     try {
+      const url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1`
+      // console.log('**** that', url)
+
       const res = await fetch(
-        'https://api.themoviedb.org/3/discover/movie?api_key=hi&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1',
+        url,
       );
       const movies = await res.json();
+      // console.log('movies', movies)
       this.setState({
         movies: movies.results,
       });
@@ -23,9 +30,12 @@ class MoviesList extends PureComponent {
   }
 
   render() {
+    const { movies } = this.state;
+
+    if(movies < 1) return <h1 data-testid={'loading'}>loading...</h1>; 
     return (
-      <MovieGrid>
-        {this.state.movies.map(movie => <Movie key={movie.id} movie={movie} />)}
+      <MovieGrid data-testid={'movie-map'}>
+        {movies.map(movie => <Movie key={movie.id} movie={movie} />)}
       </MovieGrid>
     );
   }
